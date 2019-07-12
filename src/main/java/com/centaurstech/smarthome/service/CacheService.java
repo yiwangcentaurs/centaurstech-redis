@@ -65,7 +65,7 @@ public class CacheService {
      * @param value 需要放入的对象
      * @param timeout 缓存时间，单位毫秒
      */
-    public void setObj(RedisKey redisTable,String key,Object value,Long timeout){
+    public Object setObj(RedisKey redisTable,String key,Object value,Long timeout){
         String currentKey=generateKey(redisTable,key);
         if(timeout==null){
             timeout=DEFAULT_TIME_OUT;
@@ -75,6 +75,7 @@ public class CacheService {
         }else{
             this.cacheContainer.put(currentKey,value,timeout);
         }
+        return value;
     }
 
     /**
@@ -107,4 +108,21 @@ public class CacheService {
         }
         return result;
     }
+
+    /**
+     * 判断redis或者内存中是否包含指定key，否则向redis或者内存放入对象
+     * @param redisTable
+     * @param key
+     * @param value
+     * @param timeout
+     * @return 如果已存在，返回null。否则返回放入的value
+     */
+    public synchronized Object setObjIfNotContainKey(RedisKey redisTable, String key, Object value, Long timeout) {
+        if (containKey(redisTable, key)) {
+            return null;
+        }
+        return setObj(redisTable, key, value, timeout);
+    }
+
+
 }

@@ -3,10 +3,12 @@ package com.centaurstech.smarthome.configuration;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
@@ -20,42 +22,9 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import java.time.Duration;
 
 @Configuration
+@EnableAutoConfiguration
 @EnableCaching
 public class RedisConfig extends CachingConfigurerSupport{
-
-//    @Value("${spring.redis.database}")
-//    private Integer redis_database;
-//    @Value("${spring.redis.host}")
-//    private String redis_host;
-//    @Value("${spring.redis.port}")
-//    private Integer redis_port;
-//    @Value("${spring.redis.password}")
-//    private String redis_password;
-//    @Value("${spring.redis.jedis.timeout}")
-//    private long redis_jedis_timeout;
-//    @Value("${spring.redis.jedis.max-total}")
-//    private String redis_jedis_max_total;
-//    @Value("${spring.redis.jedis.max-active}")
-//    private String redis_jedis_max_active;
-//    @Value("${spring.redis.jedis.max-idle}")
-//    private String redis_jedis_max_idle;
-//    @Value("${spring.redis.jedis.min-idle}")
-//    private String redis_jedis_min_idle;
-
-
-//    @Bean
-//    public LettuceConnectionFactory redisConnectionFactory() {
-//        RedisStandaloneConfiguration redisStandaloneConfiguration =
-//                new RedisStandaloneConfiguration(redis_host, redis_port);
-//        redisStandaloneConfiguration.setDatabase(redis_database);
-//        if(StringUtils.isEmpty(redis_password)){
-//            redisStandaloneConfiguration.setPassword(RedisPassword.of(redis_password));
-//        }
-//        LettuceConnectionFactory lettuceConnectionFactory =
-//                new LettuceConnectionFactory(redisStandaloneConfiguration);
-//        lettuceConnectionFactory.setTimeout(redis_jedis_timeout);
-//        return lettuceConnectionFactory;
-//    }
 
     /**
      * 选择redis作为默认缓存工具
