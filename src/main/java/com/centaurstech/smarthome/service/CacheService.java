@@ -1,6 +1,6 @@
 package com.centaurstech.smarthome.service;
 
-import com.centaurstech.domain.cache.TimeBasedCache;
+import com.centaurstech.smarthome.domain.TimeBasedCache;
 import com.centaurstech.smarthome.interfaces.RedisKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
