@@ -30,7 +30,6 @@ public class RedisService {
         this.setOperations=setOperations;
         this.zSetOperations=zSetOperations;
         this.valueOperations=valueOperations;
-
     }
     /**
      * 默认过期时长，单位：秒
