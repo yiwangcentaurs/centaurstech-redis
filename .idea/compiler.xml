@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel>
+      <module name="centa_main" target="1.8" />
+      <module name="centa_test" target="1.8" />
+      <module name="centaur_main" target="1.8" />
+      <module name="centaur_test" target="1.8" />
+      <module name="centaurstech-_main" target="1.8" />
+      <module name="centaurstech-_test" target="1.8" />
+      <module name="smart-home_main" target="1.8" />
+      <module name="smart-home_test" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
