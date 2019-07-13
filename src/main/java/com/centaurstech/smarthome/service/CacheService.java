@@ -5,9 +5,12 @@ import com.centaurstech.smarthome.interfaces.RedisKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Service;
 
 @Service
+@ConditionalOnMissingBean(value = {CacheService.class})
 public class CacheService {
     private static final Logger logger = LoggerFactory.getLogger(CacheService.class);
     private RedisService redisService;

@@ -1,6 +1,7 @@
 package com.centaurstech.smarthome.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
+@ConditionalOnMissingBean(value = {RedisService.class})
 public class RedisService {
     public RedisTemplate<String, Object> redisTemplate;
     public HashOperations<String,String,Object> hashOperations;

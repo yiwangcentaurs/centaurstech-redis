@@ -8,3 +8,34 @@
 
 ## 工具扩展
 可以自行继承RedisService或者CacheService
+~~~java
+@Service
+public class RedisServiceV2 extends RedisService {
+    @Autowired
+    public RedisServiceV2(RedisTemplate<String, Object> redisTemplate, HashOperations<String, String, Object> hashOperations, ValueOperations<String, Object> valueOperations, ListOperations<String, Object> listOperations, SetOperations<String, Object> setOperations, ZSetOperations<String, Object> zSetOperations) {
+        super(redisTemplate, hashOperations, valueOperations, listOperations, setOperations, zSetOperations);
+    }
+    public void test(){
+        System.out.println("you need to do sth");
+    }
+}
+
+@Service("cacheServiceV2")
+public class CacheServiceV2 extends CacheService {
+    public CacheServiceV2(RedisService redisService) {
+        super(redisService);
+        this.test();
+    }
+
+    public void test(){
+        System.out.println("TEST　ＣａｃｈｅＳｅｒｖｉｃｅＶ２　哈哈哈哈！");
+    }
+}
+
+public class SomeService{
+    @Autowired
+    @Qualifier("cacheServiceV2")
+    CacheServiceV2 cacheService;
+}
+
+~~~
