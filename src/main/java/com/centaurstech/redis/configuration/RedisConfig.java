@@ -1,4 +1,4 @@
-package com.centaurstech.smarthome.configuration;
+package com.centaurstech.redis.configuration;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;

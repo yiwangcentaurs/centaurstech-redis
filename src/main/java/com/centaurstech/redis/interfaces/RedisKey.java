@@ -1,4 +1,4 @@
-package com.centaurstech.smarthome.interfaces;
+package com.centaurstech.redis.interfaces;
 
 public interface RedisKey {
     /**

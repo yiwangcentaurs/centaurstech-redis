@@ -1,11 +1,10 @@
-package com.centaurstech.smarthome.service;
+package com.centaurstech.redis.service;
 
-import com.centaurstech.smarthome.domain.TimeBasedCache;
-import com.centaurstech.smarthome.interfaces.RedisKey;
+import com.centaurstech.redis.domain.TimeBasedCache;
+import com.centaurstech.redis.interfaces.RedisKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Service;
 
@@ -126,6 +125,58 @@ public class CacheService {
         }
         return setObj(redisTable, key, value, timeout);
     }
+
+    public void rPushObj(RedisKey redisKey,String key,Object value){
+        if(redisWorking){
+            String currentKey=generateKey(redisKey,key);
+            this.redisService.rPushObj(currentKey,value);
+        }
+    }
+
+    public void lPushObj(RedisKey redisKey,String key,Object value){
+        if(redisWorking){
+            String currentKey=generateKey(redisKey,key);
+            this.redisService.lPushObj(currentKey,value);
+        }
+    }
+
+    public Object lPopObj(RedisKey redisKey,String key){
+        if(redisWorking){
+            String currentKey=generateKey(redisKey,key);
+            return this.redisService.lPopObj(currentKey);
+        }else{
+            return null;
+        }
+    }
+
+    public Object rPopObj(RedisKey redisKey,String key){
+        if(redisWorking){
+            String currentKey=generateKey(redisKey,key);
+            return this.redisService.rPopObj(currentKey);
+        }else{
+            return null;
+        }
+    }
+
+    public Object lPeekObj(RedisKey redisKey,String key){
+        if(redisWorking){
+            String currentKey=generateKey(redisKey,key);
+            return this.redisService.lPeekObj(currentKey);
+        }else{
+            return null;
+        }
+    }
+
+    public Object rPeekObj(RedisKey redisKey,String key){
+        if(redisWorking){
+            String currentKey=generateKey(redisKey,key);
+            return this.redisService.rPeekObj(currentKey);
+        }else{
+            return null;
+        }
+    }
+
+
 
 
 }

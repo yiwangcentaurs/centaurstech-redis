@@ -1,4 +1,4 @@
-package com.centaurstech.smarthome.service;
+package com.centaurstech.redis.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -223,6 +223,56 @@ public class RedisService {
 
     public void setObj(String key,long timeout,Object value){
         this.valueOperations.set(key,value,timeout,TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * 从队列队尾入队
+     * @param key
+     * @param value
+     */
+    public void rPushObj(String key,Object value){
+        this.listOperations.rightPush(key,value);
+    }
+
+    /**
+     * 从队列队首入队
+     * @param key
+     * @param value
+     */
+    public void lPushObj(String key,Object value){
+        this.listOperations.leftPush(key,value);
+    }
+
+    /**
+     * 从队列队首出队
+     * @param key
+     * @return
+     */
+    public Object lPopObj(String key){
+        return this.listOperations.leftPop(key);
+    }
+
+    public Object rPopObj(String key){
+        return this.listOperations.rightPop(key);
+    }
+
+    /**
+     * 获取队列队首元素（不移除）
+     * @param key
+     * @return
+     */
+    public Object lPeekObj(String key){
+        return this.listOperations.index(key,0L);
+    }
+
+    /**
+     * 获取队列队尾元素（不移除）
+     * @param key
+     * @return
+     */
+    public Object rPeekObj(String key){
+        Long size=this.listOperations.size(key);
+        return this.listOperations.index(key,size-1);
     }
 
 }

@@ -1,8 +1,8 @@
-package com.centaurstech.smarthome.annotation;
+package com.centaurstech.redis.annotation;
 
-import com.centaurstech.smarthome.configuration.RedisConfig;
-import com.centaurstech.smarthome.service.CacheService;
-import com.centaurstech.smarthome.service.RedisService;
+import com.centaurstech.redis.configuration.RedisConfig;
+import com.centaurstech.redis.service.CacheService;
+import com.centaurstech.redis.service.RedisService;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.Documented;
