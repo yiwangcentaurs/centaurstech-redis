@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @ConditionalOnMissingBean(value = {CacheService.class})
 public class CacheService {
@@ -126,6 +128,12 @@ public class CacheService {
         return setObj(redisTable, key, value, timeout);
     }
 
+    /**
+     * 右侧入队元素到队列
+     * @param redisKey
+     * @param key
+     * @param value
+     */
     public void rPushObj(RedisKey redisKey,String key,Object value){
         if(redisWorking){
             String currentKey=generateKey(redisKey,key);
@@ -133,6 +141,12 @@ public class CacheService {
         }
     }
 
+    /**
+     * 左侧入队元素到队列
+     * @param redisKey
+     * @param key
+     * @param value
+     */
     public void lPushObj(RedisKey redisKey,String key,Object value){
         if(redisWorking){
             String currentKey=generateKey(redisKey,key);
@@ -140,6 +154,12 @@ public class CacheService {
         }
     }
 
+    /**
+     * 左侧出队元素
+     * @param redisKey
+     * @param key
+     * @return
+     */
     public Object lPopObj(RedisKey redisKey,String key){
         if(redisWorking){
             String currentKey=generateKey(redisKey,key);
@@ -149,6 +169,12 @@ public class CacheService {
         }
     }
 
+    /**
+     * 右侧出队元素
+     * @param redisKey
+     * @param key
+     * @return
+     */
     public Object rPopObj(RedisKey redisKey,String key){
         if(redisWorking){
             String currentKey=generateKey(redisKey,key);
@@ -158,6 +184,12 @@ public class CacheService {
         }
     }
 
+    /**
+     * 获取左侧第一个元素，不移除
+     * @param redisKey
+     * @param key
+     * @return
+     */
     public Object lPeekObj(RedisKey redisKey,String key){
         if(redisWorking){
             String currentKey=generateKey(redisKey,key);
@@ -167,12 +199,48 @@ public class CacheService {
         }
     }
 
+    /**
+     * 获取右侧第一个元素，不移除
+     * @param redisKey
+     * @param key
+     * @return
+     */
     public Object rPeekObj(RedisKey redisKey,String key){
         if(redisWorking){
             String currentKey=generateKey(redisKey,key);
             return this.redisService.rPeekObj(currentKey);
         }else{
             return null;
+        }
+    }
+
+    /**
+     * 获取list
+     * @param redisKey
+     * @param key
+     * @return
+     */
+    public List<Object> getList(RedisKey redisKey,String key){
+        if(redisWorking){
+            String currentKey=generateKey(redisKey,key);
+            return this.redisService.getList(currentKey);
+        }else{
+            return null;
+        }
+    }
+
+    /**
+     * 获取list大小
+     * @param redisKey
+     * @param key
+     * @return
+     */
+    public Long getListSize(RedisKey redisKey,String key){
+        if(redisWorking){
+            String currentKey=generateKey(redisKey,key);
+            return this.redisService.listSize(currentKey);
+        }else{
+            return 0L;
         }
     }
 

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -272,6 +273,19 @@ public class RedisService {
     public Object rPeekObj(String key){
         Long size=this.listOperations.size(key);
         return this.listOperations.index(key,size-1);
+    }
+
+    public List<Object> getList(String key){
+        Long size=this.listOperations.size(key);
+        if(size>0){
+            return this.listOperations.range(key,0,size);
+        }else{
+            return null;
+        }
+    }
+
+    public Long listSize(String key){
+        return this.listOperations.size(key);
     }
 
 }
