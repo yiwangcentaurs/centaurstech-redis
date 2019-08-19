@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
@@ -23,18 +22,16 @@ import java.time.Duration;
 @Configuration
 @EnableAutoConfiguration
 @EnableCaching
-public class RedisConfig extends CachingConfigurerSupport{
-
+public class RedisConfig extends CachingConfigurerSupport {
     /**
      * 选择redis作为默认缓存工具
+     *
      * @param factory
      * @return
      */
-    @Bean
     public CacheManager cacheManager(RedisConnectionFactory factory) {
-
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofSeconds(2*60))
+                .entryTtl(Duration.ofSeconds(2 * 60))
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
                 .disableCachingNullValues();
@@ -48,11 +45,11 @@ public class RedisConfig extends CachingConfigurerSupport{
 
     /**
      * retemplate相关配置
+     *
      * @param factory
      * @return
      */
-    @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
+    public static RedisTemplate<String, Object> createRedisTemplate(RedisConnectionFactory factory) {
 
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         // 配置连接工厂
@@ -87,7 +84,6 @@ public class RedisConfig extends CachingConfigurerSupport{
      * @param redisTemplate
      * @return
      */
-    @Bean
     public HashOperations<String, String, Object> hashOperations(RedisTemplate<String, Object> redisTemplate) {
         return redisTemplate.opsForHash();
     }
@@ -98,7 +94,6 @@ public class RedisConfig extends CachingConfigurerSupport{
      * @param redisTemplate
      * @return
      */
-    @Bean
     public ValueOperations<String, Object> valueOperations(RedisTemplate<String, Object> redisTemplate) {
         return redisTemplate.opsForValue();
     }
@@ -109,7 +104,6 @@ public class RedisConfig extends CachingConfigurerSupport{
      * @param redisTemplate
      * @return
      */
-    @Bean
     public ListOperations<String, Object> listOperations(RedisTemplate<String, Object> redisTemplate) {
         return redisTemplate.opsForList();
     }
@@ -120,7 +114,6 @@ public class RedisConfig extends CachingConfigurerSupport{
      * @param redisTemplate
      * @return
      */
-    @Bean
     public SetOperations<String, Object> setOperations(RedisTemplate<String, Object> redisTemplate) {
         return redisTemplate.opsForSet();
     }
@@ -131,7 +124,6 @@ public class RedisConfig extends CachingConfigurerSupport{
      * @param redisTemplate
      * @return
      */
-    @Bean
     public ZSetOperations<String, Object> zSetOperations(RedisTemplate<String, Object> redisTemplate) {
         return redisTemplate.opsForZSet();
     }
