@@ -292,4 +292,11 @@ public class RedisService {
         this.listOperations.rightPushAll(key,objs);
     }
 
+    public Object lPopAndRightPush(String key){
+        Object obj=lPopObj(key);
+        if(obj!=null){
+            rPushObj(key,obj);
+        }
+        return obj;
+    }
 }
