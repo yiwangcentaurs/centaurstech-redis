@@ -251,10 +251,20 @@ public class CacheService {
         }
     }
 
-    public Object lPopAndRightPush(RedisKey redisKey,String key){
+    public Object lPopAndRPush(RedisKey redisKey,String key){
         if(redisWorking){
             String currentKey=generateKey(redisKey,key);
             return this.redisService.lPopAndRightPush(currentKey);
+        }else{
+            return null;
+        }
+    }
+
+    public Object lPopAndRPushToAnother(RedisKey redisKey,String sourceKey,String destinationKey){
+        if(redisWorking){
+            String currentSourceKey=generateKey(redisKey,sourceKey);
+            String currentDestinationKey=generateKey(redisKey,sourceKey);
+            return this.redisService.lPopAndRPushToAnother(currentSourceKey,currentDestinationKey);
         }else{
             return null;
         }

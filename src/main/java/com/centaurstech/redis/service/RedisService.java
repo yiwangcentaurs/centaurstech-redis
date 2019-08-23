@@ -299,4 +299,12 @@ public class RedisService {
         }
         return obj;
     }
+
+    public Object lPopAndRPushToAnother(String sourceKey,String destinationKey){
+        Object obj=lPopObj(sourceKey);
+        if(obj!=null){
+            rPushObj(destinationKey,obj);
+        }
+        return obj;
+    }
 }
