@@ -244,6 +244,12 @@ public class CacheService {
         }
     }
 
+    public void setList(RedisKey redisKey,String key,List<Object> objs){
+        if(redisWorking){
+            String currentKey=generateKey(redisKey,key);
+            this.redisService.setList(currentKey,objs);
+        }
+    }
 
 
 

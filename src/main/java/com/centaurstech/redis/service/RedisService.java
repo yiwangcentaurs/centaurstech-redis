@@ -288,4 +288,8 @@ public class RedisService {
         return this.listOperations.size(key);
     }
 
+    public void setList(String key,List<Object> objs){
+        this.listOperations.rightPushAll(key,objs);
+    }
+
 }
