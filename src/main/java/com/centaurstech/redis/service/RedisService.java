@@ -307,4 +307,10 @@ public class RedisService {
         }
         return obj;
     }
+
+    public Long removeFromList(String key,long count,Object obj){
+        return this.listOperations.remove(key,count,obj);
+    }
+
+
 }

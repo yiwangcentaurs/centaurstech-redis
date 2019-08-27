@@ -270,4 +270,21 @@ public class CacheService {
         }
     }
 
+    /**
+     * 从list中移除count个符合的obj
+     * @param redisKey
+     * @param key
+     * @param count
+     * @param obj
+     * @return
+     */
+    public Long removeFromList(RedisKey redisKey,String key,long count,Object obj){
+        if(redisWorking){
+            String currentKey=generateKey(redisKey,key);
+            return this.redisService.removeFromList(currentKey,count,obj);
+        }else{
+            return null;
+        }
+    }
+
 }
