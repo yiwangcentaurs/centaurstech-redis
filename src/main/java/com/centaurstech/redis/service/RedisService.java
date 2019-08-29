@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
 import java.util.Date;
@@ -312,5 +313,13 @@ public class RedisService {
         return this.listOperations.remove(key,count,obj);
     }
 
+    public boolean listContainObj(String key,Object obj){
+        List<Object> objs=getList(key);
+        if(CollectionUtils.isEmpty(objs)){
+            return false;
+        }else{
+            return objs.contains(obj);
+        }
+    }
 
 }

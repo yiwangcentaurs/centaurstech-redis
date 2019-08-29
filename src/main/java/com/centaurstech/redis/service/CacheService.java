@@ -287,4 +287,20 @@ public class CacheService {
         }
     }
 
+    /**
+     * 判断list中是否包含某元素
+     * @param redisKey
+     * @param key
+     * @param obj
+     * @return
+     */
+    public boolean listContainObj(RedisKey redisKey,String key,Object obj){
+        if(redisWorking){
+            String currentKey=generateKey(redisKey,key);
+            return this.redisService.listContainObj(currentKey,obj);
+        }else{
+            return false;
+        }
+    }
+
 }
