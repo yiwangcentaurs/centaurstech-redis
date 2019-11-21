@@ -4,7 +4,8 @@
 ## 使用方法
 1. 加入依赖，引入该jar包。
 2. 实现RedisKey接口，并实现其中的getKey方法，推荐用enum类型。
-3. 注入CacheService，直接使用CacheService中的方法。
+3. 在SpringBootApplication的启动类上面加注解@EnableCentaursRedis
+4. 注入CacheService，直接使用CacheService中的方法。
 
 ## 工具扩展
 可以自行继承RedisService或者CacheService
