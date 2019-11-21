@@ -54,6 +54,21 @@ public class CacheService {
 
     /**
      * 参见setObj(redisTable, key, value, timeout)
+     * @param redisKey
+     * @param key
+     * @param value
+     */
+    public void setObjWithoutTimeout(RedisKey redisKey, String key, Object value) {
+        String currentKey=generateKey(redisKey,key);
+        if(this.redisWorking){
+            this.redisService.setObj(currentKey,value);
+        }else{
+            this.cacheContainer.put(currentKey,value);
+        }
+    }
+
+    /**
+     * 参见setObj(redisTable, key, value, timeout)
      * @param redisTable
      * @param key
      * @param value
