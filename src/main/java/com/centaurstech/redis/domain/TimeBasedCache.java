@@ -1,4 +1,4 @@
-package com.centaurstech.smarthome.domain;
+package com.centaurstech.redis.domain;
 
 import java.util.Calendar;
 import java.util.HashMap;

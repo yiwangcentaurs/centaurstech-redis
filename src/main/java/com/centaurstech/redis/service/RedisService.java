@@ -1,17 +1,21 @@
-package com.centaurstech.smarthome.service;
+package com.centaurstech.redis.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
+@ConditionalOnMissingBean(value = {RedisService.class})
 public class RedisService {
     public RedisTemplate<String, Object> redisTemplate;
     public HashOperations<String,String,Object> hashOperations;
@@ -220,6 +224,102 @@ public class RedisService {
 
     public void setObj(String key,long timeout,Object value){
         this.valueOperations.set(key,value,timeout,TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * 从队列队尾入队
+     * @param key
+     * @param value
+     */
+    public void rPushObj(String key,Object value){
+        this.listOperations.rightPush(key,value);
+    }
+
+    /**
+     * 从队列队首入队
+     * @param key
+     * @param value
+     */
+    public void lPushObj(String key,Object value){
+        this.listOperations.leftPush(key,value);
+    }
+
+    /**
+     * 从队列队首出队
+     * @param key
+     * @return
+     */
+    public Object lPopObj(String key){
+        return this.listOperations.leftPop(key);
+    }
+
+    public Object rPopObj(String key){
+        return this.listOperations.rightPop(key);
+    }
+
+    /**
+     * 获取队列队首元素（不移除）
+     * @param key
+     * @return
+     */
+    public Object lPeekObj(String key){
+        return this.listOperations.index(key,0L);
+    }
+
+    /**
+     * 获取队列队尾元素（不移除）
+     * @param key
+     * @return
+     */
+    public Object rPeekObj(String key){
+        Long size=this.listOperations.size(key);
+        return this.listOperations.index(key,size-1);
+    }
+
+    public List<Object> getList(String key){
+        Long size=this.listOperations.size(key);
+        if(size>0){
+            return this.listOperations.range(key,0,size);
+        }else{
+            return null;
+        }
+    }
+
+    public Long listSize(String key){
+        return this.listOperations.size(key);
+    }
+
+    public void setList(String key,List<Object> objs){
+        this.listOperations.rightPushAll(key,objs);
+    }
+
+    public Object lPopAndRightPush(String key){
+        Object obj=lPopObj(key);
+        if(obj!=null){
+            rPushObj(key,obj);
+        }
+        return obj;
+    }
+
+    public Object lPopAndRPushToAnother(String sourceKey,String destinationKey){
+        Object obj=lPopObj(sourceKey);
+        if(obj!=null){
+            rPushObj(destinationKey,obj);
+        }
+        return obj;
+    }
+
+    public Long removeFromList(String key,long count,Object obj){
+        return this.listOperations.remove(key,count,obj);
+    }
+
+    public boolean listContainObj(String key,Object obj){
+        List<Object> objs=getList(key);
+        if(CollectionUtils.isEmpty(objs)){
+            return false;
+        }else{
+            return objs.contains(obj);
+        }
     }
 
 }

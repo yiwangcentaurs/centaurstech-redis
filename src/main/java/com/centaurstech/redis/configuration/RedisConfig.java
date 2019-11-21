@@ -1,10 +1,14 @@
-package com.centaurstech.smarthome.configuration;
+package com.centaurstech.redis.configuration;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -16,15 +20,20 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
 
-public class RedisConfig extends CachingConfigurerSupport{
+@Configuration
+@EnableAutoConfiguration
+@EnableCaching
+public class RedisConfig extends CachingConfigurerSupport {
     /**
      * 选择redis作为默认缓存工具
+     *
      * @param factory
      * @return
      */
+    @Bean
     public CacheManager cacheManager(RedisConnectionFactory factory) {
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofSeconds(2*60))
+                .entryTtl(Duration.ofSeconds(2 * 60))
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
                 .disableCachingNullValues();
@@ -41,7 +50,8 @@ public class RedisConfig extends CachingConfigurerSupport{
      * @param factory
      * @return
      */
-    public static RedisTemplate<String, Object> createRedisTemplate(RedisConnectionFactory factory) {
+    @Bean
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
 
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         // 配置连接工厂
@@ -72,45 +82,55 @@ public class RedisConfig extends CachingConfigurerSupport{
 
     /**
      * 对hash类型的数据操作
+     *
      * @param redisTemplate
      * @return
      */
+    @Bean
     public HashOperations<String, String, Object> hashOperations(RedisTemplate<String, Object> redisTemplate) {
         return redisTemplate.opsForHash();
     }
 
     /**
      * 对redis字符串类型数据操作
+     *
      * @param redisTemplate
      * @return
      */
+    @Bean
     public ValueOperations<String, Object> valueOperations(RedisTemplate<String, Object> redisTemplate) {
         return redisTemplate.opsForValue();
     }
 
     /**
      * 对链表类型的数据操作
+     *
      * @param redisTemplate
      * @return
      */
+    @Bean
     public ListOperations<String, Object> listOperations(RedisTemplate<String, Object> redisTemplate) {
         return redisTemplate.opsForList();
     }
 
     /**
      * 对无序集合类型的数据操作
+     *
      * @param redisTemplate
      * @return
      */
+    @Bean
     public SetOperations<String, Object> setOperations(RedisTemplate<String, Object> redisTemplate) {
         return redisTemplate.opsForSet();
     }
 
     /**
      * 对有序集合类型的数据操作
+     *
      * @param redisTemplate
      * @return
      */
+    @Bean
     public ZSetOperations<String, Object> zSetOperations(RedisTemplate<String, Object> redisTemplate) {
         return redisTemplate.opsForZSet();
     }
