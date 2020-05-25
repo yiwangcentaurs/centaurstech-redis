@@ -301,11 +301,10 @@ public class RedisService {
      * 如果不存在，则插入数据
      * @param key
      * @param obj
-     * @param timeout
      * @return
      */
-    public boolean setIfAbsent(String key, Object obj,long timeout){
-        return this.valueOperations.setIfAbsent(key,obj,timeout,TimeUnit.MILLISECONDS);
+    public boolean setIfAbsent(String key, Object obj){
+        return this.valueOperations.setIfAbsent(key,obj);
     }
 
 }

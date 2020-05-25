@@ -354,7 +354,7 @@ public class CacheService {
             String currentKey = generateKey(redisKey, key);
             long begin = System.currentTimeMillis();
             do {
-                boolean success = redisService.setIfAbsent(currentKey, 1, expireIn);
+                boolean success = redisService.setIfAbsent(currentKey, 1);
                 if (success) {
                     /**
                      * 锁成功了
@@ -373,6 +373,14 @@ public class CacheService {
                 }
                 if (System.currentTimeMillis() - begin >= timeout) {
                     return false;
+                }
+
+                /**
+                 * 到了key的过期时间，则清空该key
+                 */
+                if (System.currentTimeMillis() - begin >= expireIn) {
+                    redisService.deleteKey(key);
+                    continue;
                 }
             } while (true);
         } else {
