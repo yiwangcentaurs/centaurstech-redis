@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 @Retention(value = java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target(value = {java.lang.annotation.ElementType.TYPE})
 @Documented
-@Import({RedisConfig.class, CacheService.class, CacheServiceV2.class, RedisService.class, RedisServiceV2.class,RedisTemplate.class})
+@Import({RedisConfig.class, CacheService.class, CacheServiceV2.class, RedisService.class, RedisServiceV2.class})
 public @interface EnableCentaursRedis {
 
 }
