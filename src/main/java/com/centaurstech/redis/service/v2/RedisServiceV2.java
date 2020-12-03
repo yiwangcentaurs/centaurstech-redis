@@ -21,10 +21,6 @@ import java.util.stream.Stream;
 @Qualifier("redisServiceV2")
 @ConditionalOnMissingBean(value = {RedisServiceV2.class})
 public class RedisServiceV2 extends RedisService {
-
-    public RedisTemplate<String, Object> redisTemplate;
-
-
     @Autowired
     public RedisServiceV2(@Qualifier("redisTemplateV2") RedisTemplate<String, Object> redisTemplate) {
         super(redisTemplate);
