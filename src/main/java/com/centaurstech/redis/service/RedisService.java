@@ -1,6 +1,8 @@
 package com.centaurstech.redis.service;
 
+import com.centaurstech.redis.annotation.EnableCentaursRedis;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
+@Qualifier("redisService")
 @ConditionalOnMissingBean(value = {RedisService.class})
 public class RedisService {
     public RedisTemplate<String, Object> redisTemplate;
@@ -25,15 +28,13 @@ public class RedisService {
     public ZSetOperations<String, Object> zSetOperations;
 
     @Autowired
-    public RedisService(RedisTemplate<String, Object> redisTemplate, HashOperations<String, String, Object> hashOperations,
-                        ValueOperations<String, Object> valueOperations, ListOperations<String, Object> listOperations,
-                        SetOperations<String, Object> setOperations, ZSetOperations<String, Object> zSetOperations) {
-        this.hashOperations = hashOperations;
-        this.listOperations = listOperations;
+    public RedisService(@Qualifier("redisTemplate") RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
-        this.setOperations = setOperations;
-        this.zSetOperations = zSetOperations;
-        this.valueOperations = valueOperations;
+        this.hashOperations = redisTemplate.opsForHash();
+        this.listOperations = redisTemplate.opsForList();
+        this.setOperations = redisTemplate.opsForSet();
+        this.zSetOperations = redisTemplate.opsForZSet();
+        this.valueOperations = redisTemplate.opsForValue();
     }
     /**
      * 默认过期时长，单位：秒
