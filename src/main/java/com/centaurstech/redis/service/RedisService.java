@@ -1,6 +1,5 @@
 package com.centaurstech.redis.service;
 
-import com.centaurstech.redis.annotation.EnableCentaursRedis;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -218,6 +217,19 @@ public class RedisService {
         return this.valueOperations.get(key);
     }
 
+    /**
+     * 获取对象
+     * 类型转换由内部做，外部不用强制转换
+     *
+     * @param key
+     * @param returnType
+     * @param <T>
+     * @return
+     */
+    public <T> T getObj(String key, Class<T> returnType) {
+        return (T) this.valueOperations.get(key);
+    }
+
     public void setObj(String key, Object value) {
         this.valueOperations.set(key, value);
     }
@@ -256,8 +268,34 @@ public class RedisService {
         return this.listOperations.leftPop(key);
     }
 
+    /**
+     * 从队列队首出队
+     * 类型转换由内部做，外部不用强制转换
+     *
+     * @param key
+     * @param returnType
+     * @param <T>
+     * @return
+     */
+    public <T> T lPopObj(String key, Class<T> returnType) {
+        return (T) this.listOperations.leftPop(key);
+    }
+
     public Object rPopObj(String key) {
         return this.listOperations.rightPop(key);
+    }
+
+    /**
+     * 从队列队尾出队
+     * 类型转换由内部做，外部不用强制转换
+     *
+     * @param key
+     * @param returnType
+     * @param <T>
+     * @return
+     */
+    public <T> T rPopObj(String key, Class<T> returnType) {
+        return (T) this.listOperations.rightPop(key);
     }
 
     /**
@@ -271,6 +309,19 @@ public class RedisService {
     }
 
     /**
+     * 获取队列队首元素（不移除）
+     * 类型转换由内部做，外部不用强制转换
+     *
+     * @param key
+     * @param returnType
+     * @param <T>
+     * @return
+     */
+    public <T> T lPeekObj(String key, Class<T> returnType) {
+        return (T) this.listOperations.index(key, 0L);
+    }
+
+    /**
      * 获取队列队尾元素（不移除）
      *
      * @param key
@@ -281,10 +332,38 @@ public class RedisService {
         return this.listOperations.index(key, size - 1);
     }
 
+    /**
+     * 获取队列队尾元素（不移除）
+     * 类型转换由内部做，外部不用强制转换
+     *
+     * @param key
+     * @return
+     */
+    public <T> T rPeekObj(String key, Class<T> returnType) {
+        Long size = this.listOperations.size(key);
+        return (T) this.listOperations.index(key, size - 1);
+    }
+
     public List<Object> getList(String key) {
         Long size = this.listOperations.size(key);
         if (size > 0) {
             return this.listOperations.range(key, 0, size);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * 获取队列中所有元素
+     * 类型转换由内部做，外部不用强制转换
+     *
+     * @param key
+     * @return
+     */
+    public <T> List<T> getList(String key, Class<T> returnType) {
+        Long size = this.listOperations.size(key);
+        if (size > 0) {
+            return (List<T>) this.listOperations.range(key, 0, size);
         } else {
             return null;
         }
@@ -298,6 +377,12 @@ public class RedisService {
         this.listOperations.rightPushAll(key, objs);
     }
 
+    /**
+     * 从队首出队，再从队尾入队
+     *
+     * @param key
+     * @return
+     */
     public Object lPopAndRightPush(String key) {
         Object obj = lPopObj(key);
         if (obj != null) {
@@ -306,12 +391,48 @@ public class RedisService {
         return obj;
     }
 
+    /**
+     * 从A队列队首出队，将对应的元素，从B队列队尾入队
+     *
+     * @param sourceKey      原队列
+     * @param destinationKey 目标队列
+     * @return
+     */
     public Object lPopAndRPushToAnother(String sourceKey, String destinationKey) {
         Object obj = lPopObj(sourceKey);
         if (obj != null) {
             rPushObj(destinationKey, obj);
         }
         return obj;
+    }
+
+    /**
+     * 从队首出队，再从队尾入队
+     *
+     * @param key
+     * @return
+     */
+    public <T> T lPopAndRightPush(String key, Class<T> returnType) {
+        Object obj = lPopObj(key);
+        if (obj != null) {
+            rPushObj(key, obj);
+        }
+        return (T) obj;
+    }
+
+    /**
+     * 从A队列队首出队，将对应的元素，从B队列队尾入队
+     *
+     * @param sourceKey      原队列
+     * @param destinationKey 目标队列
+     * @return
+     */
+    public <T> T lPopAndRPushToAnother(String sourceKey, String destinationKey, Class<T> returnType) {
+        Object obj = lPopObj(sourceKey);
+        if (obj != null) {
+            rPushObj(destinationKey, obj);
+        }
+        return (T) obj;
     }
 
     public Long removeFromList(String key, long count, Object obj) {

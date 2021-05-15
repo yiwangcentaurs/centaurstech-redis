@@ -4,9 +4,6 @@ import com.centaurstech.redis.domain.TimeBasedCache;
 import com.centaurstech.redis.interfaces.RedisKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
@@ -55,8 +52,28 @@ public abstract class CacheServiceWrapper {
         return result;
     }
 
+
+    public <T> T getObj(RedisKey redisTable, String key, Class<T> returnType, boolean logKey) {
+        Object result = null;
+        String currentKey = generateKey(redisTable, key);
+        if (logKey) {
+            logger.debug("get key is: " + key);
+            logger.debug("get currentKey is: " + currentKey);
+        }
+        if (this.redisWorking) {
+            result = this.redisService.getObj(currentKey);
+        } else {
+            result = this.cacheContainer.get(currentKey);
+        }
+        return (T) result;
+    }
+
     public Object getObj(RedisKey redisTable, String key) {
         return getObj(redisTable, key, false);
+    }
+
+    public <T> T getObj(RedisKey redisTable, String key, Class<T> returnType) {
+        return getObj(redisTable, key, returnType, false);
     }
 
     /**
@@ -133,7 +150,29 @@ public abstract class CacheServiceWrapper {
         return setObj(redisTable, key, value, timeout, false);
     }
 
+    public <T> T setObjV2(RedisKey redisTable, String key, T value, Long timeout) {
+        return setObjV2(redisTable, key, value, timeout, false);
+    }
+
     public Object setObj(RedisKey redisTable, String key, Object value, Long timeout, boolean logKey) {
+        String currentKey = generateKey(redisTable, key);
+        if (timeout == null) {
+            timeout = DEFAULT_TIME_OUT;
+        }
+        if (logKey) {
+            logger.debug("put key is: " + key);
+            logger.debug("put currentKey is: " + currentKey);
+        }
+        if (this.redisWorking) {
+            this.redisService.setObj(currentKey, timeout, value);
+        } else {
+            this.cacheContainer.put(currentKey, value, timeout);
+        }
+
+        return value;
+    }
+
+    public <T> T setObjV2(RedisKey redisTable, String key, T value, Long timeout, boolean logKey) {
         String currentKey = generateKey(redisTable, key);
         if (timeout == null) {
             timeout = DEFAULT_TIME_OUT;
@@ -219,6 +258,21 @@ public abstract class CacheServiceWrapper {
 
     public Object removeObj(RedisKey redisTable, String key) {
         Object value = getObj(redisTable, key);
+        delKey(redisTable, key);
+        return value;
+    }
+
+    /**
+     * 移除对应key的元素
+     *
+     * @param redisTable
+     * @param key
+     * @param returnType
+     * @param <T>
+     * @return
+     */
+    public <T> T removeObj(RedisKey redisTable, String key, Class<T> returnType) {
+        T value = getObj(redisTable, key, returnType);
         delKey(redisTable, key);
         return value;
     }
@@ -357,6 +411,86 @@ public abstract class CacheServiceWrapper {
     }
 
     /**
+     * 左侧出队元素
+     *
+     * @param redisKey
+     * @param key
+     * @return
+     */
+    public <T> T lPopObj(RedisKey redisKey, String key, Class<T> returnType) {
+        if (redisWorking) {
+            String currentKey = generateKey(redisKey, key);
+            return this.redisService.lPopObj(currentKey, returnType);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * 右侧出队元素
+     *
+     * @param redisKey
+     * @param key
+     * @return
+     */
+    public <T> T rPopObj(RedisKey redisKey, String key, Class<T> returnType) {
+        if (redisWorking) {
+            String currentKey = generateKey(redisKey, key);
+            return this.redisService.rPopObj(currentKey, returnType);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * 获取左侧第一个元素，不移除
+     *
+     * @param redisKey
+     * @param key
+     * @return
+     */
+    public <T> T lPeekObj(RedisKey redisKey, String key, Class<T> returnType) {
+        if (redisWorking) {
+            String currentKey = generateKey(redisKey, key);
+            return this.redisService.lPeekObj(currentKey, returnType);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * 获取右侧第一个元素，不移除
+     *
+     * @param redisKey
+     * @param key
+     * @return
+     */
+    public <T> T rPeekObj(RedisKey redisKey, String key, Class<T> returnType) {
+        if (redisWorking) {
+            String currentKey = generateKey(redisKey, key);
+            return this.redisService.rPeekObj(currentKey, returnType);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * 获取list
+     *
+     * @param redisKey
+     * @param key
+     * @return
+     */
+    public <T> List<T> getList(RedisKey redisKey, String key, Class<T> returnType) {
+        if (redisWorking) {
+            String currentKey = generateKey(redisKey, key);
+            return this.redisService.getList(currentKey, returnType);
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * 获取list大小
      *
      * @param redisKey
@@ -379,6 +513,13 @@ public abstract class CacheServiceWrapper {
         }
     }
 
+    /**
+     * 从队首出队，再从队尾入队
+     *
+     * @param redisKey
+     * @param key
+     * @return
+     */
     public Object lPopAndRPush(RedisKey redisKey, String key) {
         if (redisWorking) {
             String currentKey = generateKey(redisKey, key);
@@ -388,11 +529,53 @@ public abstract class CacheServiceWrapper {
         }
     }
 
+    /**
+     * 从A队列队首出队，将对应的元素，从B队列队尾入队
+     *
+     * @param redisKey
+     * @param sourceKey
+     * @param destinationKey
+     * @return
+     */
     public Object lPopAndRPushToAnother(RedisKey redisKey, String sourceKey, String destinationKey) {
         if (redisWorking) {
             String currentSourceKey = generateKey(redisKey, sourceKey);
             String currentDestinationKey = generateKey(redisKey, destinationKey);
             return this.redisService.lPopAndRPushToAnother(currentSourceKey, currentDestinationKey);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * 从队首出队，再从队尾入队
+     *
+     * @param redisKey
+     * @param key
+     * @return
+     */
+    public <T> T lPopAndRPush(RedisKey redisKey, String key, Class<T> returnType) {
+        if (redisWorking) {
+            String currentKey = generateKey(redisKey, key);
+            return this.redisService.lPopAndRightPush(currentKey, returnType);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * 从A队列队首出队，将对应的元素，从B队列队尾入队
+     *
+     * @param redisKey
+     * @param sourceKey
+     * @param destinationKey
+     * @return
+     */
+    public <T> T lPopAndRPushToAnother(RedisKey redisKey, String sourceKey, String destinationKey, Class<T> returnType) {
+        if (redisWorking) {
+            String currentSourceKey = generateKey(redisKey, sourceKey);
+            String currentDestinationKey = generateKey(redisKey, destinationKey);
+            return this.redisService.lPopAndRPushToAnother(currentSourceKey, currentDestinationKey, returnType);
         } else {
             return null;
         }
